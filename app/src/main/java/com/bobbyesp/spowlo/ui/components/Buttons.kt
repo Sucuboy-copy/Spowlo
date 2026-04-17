@@ -130,14 +130,14 @@ fun OpenInSpotifyFilledButton(
         modifier = modifier,
         onClick = onClick,
         colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = Color(red = 30, green = 215, blue = 96).harmonizeWithPrimary(),
+            containerColor = Color(red = 255, green = 0, blue = 0).harmonizeWithPrimary(),
         ),
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding
     )
     {
         Icon(
             modifier = Modifier.size(18.dp),
-            imageVector = ImageVector.vectorResource(id = R.drawable.spotify_logo),
+            imageVector = ImageVector.vectorResource(id = R.drawable.youtube_music_icons8),
             contentDescription = null
         )
         Text(

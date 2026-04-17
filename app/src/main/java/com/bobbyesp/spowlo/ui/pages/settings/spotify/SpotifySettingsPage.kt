@@ -5,8 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.Key
-import androidx.compose.material.icons.outlined.PermIdentity
+import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,10 +38,11 @@ import com.bobbyesp.spowlo.ui.components.PreferenceInfo
 import com.bobbyesp.spowlo.ui.components.PreferenceSubtitle
 import com.bobbyesp.spowlo.ui.components.settings.SettingsItemNew
 import com.bobbyesp.spowlo.ui.components.settings.SettingsSwitch
+import com.bobbyesp.spowlo.utils.ChromeCustomTabsUtil
 import com.bobbyesp.spowlo.utils.PreferencesUtil
-import com.bobbyesp.spowlo.utils.SPOTIFY_CLIENT_ID
-import com.bobbyesp.spowlo.utils.SPOTIFY_CLIENT_SECRET
-import com.bobbyesp.spowlo.utils.USE_SPOTIFY_CREDENTIALS
+import com.bobbyesp.spowlo.utils.USE_YT_METADATA
+
+private const val YT_MUSIC_HOME = "https://music.youtube.com"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,28 +52,10 @@ fun SpotifySettingsPage(onBackPressed: () -> Unit) {
         canScroll = { true }
     )
 
-    var spotifyClientId by remember {
-        mutableStateOf(
-            PreferencesUtil.getValue(
-                SPOTIFY_CLIENT_ID
-            )
-        )
+    var useYtMetadata by remember {
+        mutableStateOf(PreferencesUtil.getValue(USE_YT_METADATA))
     }
 
-    var spotifyClientSecret by remember {
-        mutableStateOf(
-            PreferencesUtil.getValue(
-                SPOTIFY_CLIENT_SECRET
-            )
-        )
-    }
-
-    var useSpotifyCredentials by remember {
-        mutableStateOf(PreferencesUtil.getValue(USE_SPOTIFY_CREDENTIALS))
-    }
-
-    var showClientIdDialog by remember { mutableStateOf(false) }
-    var showClientSecretDialog by remember { mutableStateOf(false) }
     var showHelpDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -84,20 +66,14 @@ fun SpotifySettingsPage(onBackPressed: () -> Unit) {
             LargeTopAppBar(
                 title = {
                     Text(
-                        modifier = Modifier,
-                        text = stringResource(id = R.string.spotify_settings),
+                        text = stringResource(id = R.string.ytmusic_settings),
                         fontWeight = FontWeight.Bold
                     )
-                }, navigationIcon = {
-                    BackButton {
-                        onBackPressed()
-                    }
                 },
+                navigationIcon = { BackButton { onBackPressed() } },
                 scrollBehavior = scrollBehavior,
                 actions = {
-                    IconButton(onClick = {
-                        showHelpDialog = !showHelpDialog
-                    }) {
+                    IconButton(onClick = { showHelpDialog = !showHelpDialog }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                             contentDescription = stringResource(R.string.how_does_it_work)
@@ -105,7 +81,8 @@ fun SpotifySettingsPage(onBackPressed: () -> Unit) {
                     }
                 }
             )
-        }, content = {
+        },
+        content = {
             LazyColumn(
                 Modifier
                     .padding(it)
@@ -117,25 +94,20 @@ fun SpotifySettingsPage(onBackPressed: () -> Unit) {
                 item {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                3.dp
-                            )
+                            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
                         )
                     ) {
                         SettingsSwitch(
                             title = {
                                 Text(
-                                    stringResource(id = R.string.use_spotify_credentials),
+                                    stringResource(id = R.string.use_yt_metadata),
                                     fontWeight = FontWeight.Bold
                                 )
                             },
-                            checked = useSpotifyCredentials,
+                            checked = useYtMetadata,
                             onCheckedChange = {
-                                useSpotifyCredentials = !useSpotifyCredentials
-                                PreferencesUtil.updateValue(
-                                    USE_SPOTIFY_CREDENTIALS,
-                                    useSpotifyCredentials
-                                )
+                                useYtMetadata = !useYtMetadata
+                                PreferencesUtil.updateValue(USE_YT_METADATA, useYtMetadata)
                             },
                             addTonalElevation = true
                         )
@@ -143,36 +115,17 @@ fun SpotifySettingsPage(onBackPressed: () -> Unit) {
                         SettingsItemNew(
                             title = {
                                 Text(
-                                    stringResource(id = R.string.spotify_client_id),
+                                    stringResource(id = R.string.open_in_ytmusic),
                                     fontWeight = FontWeight.Bold
                                 )
                             },
                             description = {
-                                Text(stringResource(id = R.string.spotify_client_id_description))
+                                Text(stringResource(id = R.string.open_in_ytmusic_description))
                             },
-                            icon = Icons.Outlined.PermIdentity,
+                            icon = Icons.Outlined.OpenInNew,
                             onClick = {
-                                showClientIdDialog = true
+                                ChromeCustomTabsUtil.openUrl(YT_MUSIC_HOME)
                             },
-                            enabled = useSpotifyCredentials,
-                            addTonalElevation = true
-                        )
-
-                        SettingsItemNew(
-                            title = {
-                                Text(
-                                    stringResource(id = R.string.spotify_client_secret),
-                                    fontWeight = FontWeight.Bold
-                                )
-                            },
-                            description = {
-                                Text(stringResource(id = R.string.spotify_client_secret_description))
-                            },
-                            icon = Icons.Outlined.Key,
-                            onClick = {
-                                showClientSecretDialog = true
-                            },
-                            enabled = useSpotifyCredentials,
                             addTonalElevation = true
                         )
                     }
@@ -180,23 +133,14 @@ fun SpotifySettingsPage(onBackPressed: () -> Unit) {
                 item {
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
                     PreferenceInfo(
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp),
-                        text = stringResource(id = R.string.spotify_credentials_info)
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        text = stringResource(id = R.string.use_yt_metadata_desc)
                     )
                 }
             }
-        })
-    if (showClientIdDialog) {
-        SpotifyClientIDDialog {
-            showClientIdDialog = !showClientIdDialog
         }
-    }
-    if (showClientSecretDialog) {
-        SpotifyClientSecretDialog {
-            showClientSecretDialog = !showClientSecretDialog
-        }
-    }
+    )
+
     if (showHelpDialog) {
         SpotifySettingsPageInfoDialog {
             showHelpDialog = !showHelpDialog
@@ -209,10 +153,10 @@ fun SpotifySettingsPageInfoDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(stringResource(id = R.string.spotify_api_info))
+            Text(stringResource(id = R.string.ytmusic_settings))
         },
         text = {
-            Text(stringResource(id = R.string.spotify_api_info_description))
+            Text(stringResource(id = R.string.ytmusic_settings_info_description))
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {

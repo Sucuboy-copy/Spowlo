@@ -177,12 +177,12 @@ fun SettingsPage(navController: NavController) {
                 SettingsItemNew(
                     title = {
                         Text(
-                            text = stringResource(id = R.string.spotify_settings),
+                            text = stringResource(id = R.string.ytmusic_settings),
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    description = { Text(text = stringResource(id = R.string.spotify_settings_desc)) },
-                    icon = LocalAsset(id = R.drawable.spotify_logo),
+                    description = { Text(text = stringResource(id = R.string.ytmusic_settings_desc)) },
+                    icon = LocalAsset(id = R.drawable.youtube_music_icons8),
                     onClick = {
                         navController.navigate(Route.SPOTIFY_PREFERENCES) {
                             launchSingleTop = true

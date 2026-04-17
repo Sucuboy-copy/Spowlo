@@ -92,7 +92,7 @@ private val StringPreferenceDefaults =
         SPOTIFY_CLIENT_ID to "",
         SPOTIFY_CLIENT_SECRET to "",
         LYRIC_PROVIDERS to "",
-        AUDIO_PROVIDERS to "",
+        AUDIO_PROVIDERS to "YouTube Music",
     )
 
 private val BooleanPreferenceDefaults =
@@ -102,7 +102,7 @@ private val BooleanPreferenceDefaults =
         CELLULAR_DOWNLOAD to true,
         ORIGINAL_AUDIO to false,
         USE_SPOTIFY_CREDENTIALS to false,
-        USE_YT_METADATA to false,
+        USE_YT_METADATA to true,
         DOWNLOAD_LYRICS to false,
         AUTO_UPDATE to true,
         USE_CACHING to false,
