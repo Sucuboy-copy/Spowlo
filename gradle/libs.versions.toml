@@ -22,7 +22,7 @@ androidxHiltNavigationCompose = "1.2.0"
 
 androidxTestExt = "1.2.1"
 
-spotdlAndroidVersion = "0.3.0-alpha.61a1446"
+spotdlAndroidVersion = "master_no_flavors-SNAPSHOT"
 spotifyApiKotlinVersion = "4.0.2"
 
 crashHandlerVersion = "2.0.2"

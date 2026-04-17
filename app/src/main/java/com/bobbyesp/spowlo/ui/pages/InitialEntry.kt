@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -27,12 +26,9 @@ import androidx.navigation.navOptions
 import androidx.navigation.navigation
 import com.bobbyesp.library.domain.UpdateStatus
 import com.bobbyesp.spowlo.App
-import com.bobbyesp.spowlo.R
-import com.bobbyesp.spowlo.features.spotify_api.data.remote.SpotifyApiRequests
 import com.bobbyesp.spowlo.ui.common.LocalWindowWidthState
 import com.bobbyesp.spowlo.ui.common.Route
 import com.bobbyesp.spowlo.ui.common.animatedComposable
-import com.bobbyesp.spowlo.ui.common.animatedComposableVariant
 import com.bobbyesp.spowlo.ui.common.arg
 import com.bobbyesp.spowlo.ui.common.id
 import com.bobbyesp.spowlo.ui.common.slideInVerticallyComposable
@@ -43,11 +39,9 @@ import com.bobbyesp.spowlo.ui.pages.downloader.DownloaderPage
 import com.bobbyesp.spowlo.ui.pages.downloader.DownloaderViewModel
 import com.bobbyesp.spowlo.ui.pages.history.DownloadsHistoryPage
 import com.bobbyesp.spowlo.ui.pages.metadata_viewer.playlists.PlaylistPageViewModel
-import com.bobbyesp.spowlo.ui.pages.metadata_viewer.playlists.SpotifyItemPage
 import com.bobbyesp.spowlo.ui.pages.mod_downloader.ModsDownloaderPage
 import com.bobbyesp.spowlo.ui.pages.mod_downloader.ModsDownloaderViewModel
 import com.bobbyesp.spowlo.ui.pages.playlist.PlaylistMetadataPage
-import com.bobbyesp.spowlo.ui.pages.searcher.SearcherPage
 import com.bobbyesp.spowlo.ui.pages.settings.SettingsPage
 import com.bobbyesp.spowlo.ui.pages.settings.about.AboutPage
 import com.bobbyesp.spowlo.ui.pages.settings.appearance.AppThemePreferencesPage
@@ -65,7 +59,6 @@ import com.bobbyesp.spowlo.ui.pages.settings.spotify.SpotifySettingsPage
 import com.bobbyesp.spowlo.ui.pages.settings.updater.UpdaterPage
 import com.bobbyesp.spowlo.utils.PreferencesUtil.getString
 import com.bobbyesp.spowlo.utils.SPOTDL
-import com.bobbyesp.spowlo.utils.ToastUtil
 import com.bobbyesp.spowlo.utils.UpdateUtil
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -74,8 +67,6 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-private const val TAG = "InitialEntry"
 
 @OptIn(
     ExperimentalAnimationApi::class,
@@ -101,8 +92,6 @@ fun InitialEntry(
     LaunchedEffect(windowWidthState) {
         isLandscape.targetState = windowWidthState == WindowWidthSizeClass.Expanded
     }
-
-    val context = LocalContext.current
 
     var showDownloaderBottomSheet by remember { mutableStateOf(false) }
     val sheetState = androidx.compose.material3.rememberModalBottomSheetState()
@@ -151,9 +140,6 @@ fun InitialEntry(
                     },
                     navigateToTasks = {
                         navController.navigate(Route.DownloadTasksNavi)
-                    },
-                    navigateToSearch = {
-                        navController.navigate(Route.SearcherNavi)
                     },
                     downloaderViewModel = downloaderViewModel,
                     sheetState = sheetState
@@ -250,47 +236,6 @@ fun InitialEntry(
             }
         }
 
-        //Can add the downloads history bottom sheet here using `val downloadsHistoryViewModel = hiltViewModel()`
-        navigation(startDestination = Route.SEARCHER, route = Route.SearcherNavi) {
-
-            animatedComposableVariant(Route.SEARCHER) {
-                SearcherPage(
-                    navController = navController
-                )
-            }
-
-
-            //We create the arguments for the route
-            val typeArg = navArgument("type") {
-                type = NavType.StringType
-            }
-
-            val idArg = navArgument("id") {
-                type = NavType.StringType
-            }
-
-            //We build the route with the type of the destination and the id of it
-            val routeWithIdPattern: String =
-                StringBuilder().append(Route.PLAYLIST_PAGE).append("/{type}")
-                    .append("/{id}").toString()
-
-            //We create the composable with the route and the arguments
-            animatedComposableVariant(
-                routeWithIdPattern, arguments = listOf(typeArg, idArg)
-            ) { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id") ?: "SOMETHING WENT WRONG"
-                val type =
-                    backStackEntry.arguments?.getString("type") ?: "SOMETHING WENT WRONG"
-
-                SpotifyItemPage(
-                    onBackPressed,
-                    id = id,
-                    type = type,
-                    playlistPageViewModel = playlistPageViewModel,
-                )
-            }
-        }
-
         navigation(
             startDestination = Route.DOWNLOAD_TASKS, route = Route.DownloadTasksNavi
         ) {
@@ -314,16 +259,6 @@ fun InitialEntry(
                     onNavigateToDetail = { navController.navigate(Route.FULLSCREEN_LOG id it) }
                 )
             }
-        }
-    }
-
-    //INIT SPOTIFY API
-    LaunchedEffect(Unit) {
-        runCatching {
-            SpotifyApiRequests.provideSpotifyApi()
-        }.onFailure {
-            it.printStackTrace()
-            ToastUtil.makeToast(context.getString(R.string.spotify_api_error))
         }
     }
 

@@ -57,9 +57,6 @@ object DownloaderUtil {
         val audioFormat: Int = PreferencesUtil.getAudioFormat(),
         val audioQuality: Int = PreferencesUtil.getAudioQuality(),
         val preserveOriginalAudio: Boolean = PreferencesUtil.getValue(ORIGINAL_AUDIO),
-        val useSpotifyPreferences: Boolean = PreferencesUtil.getValue(USE_SPOTIFY_CREDENTIALS),
-        val spotifyClientID: String = SPOTIFY_CLIENT_ID.getString(),
-        val spotifyClientSecret: String = SPOTIFY_CLIENT_SECRET.getString(),
         val useYtMetadata: Boolean = PreferencesUtil.getValue(USE_YT_METADATA),
         val useCookies: Boolean = PreferencesUtil.getValue(COOKIES),
         val downloadLyrics: Boolean = PreferencesUtil.getValue(DOWNLOAD_LYRICS),
@@ -357,15 +354,7 @@ object DownloaderUtil {
             val request = SpotDLRequest()
             val pathBuilder = StringBuilder()
             commonRequest(downloadPreferences, url, request, pathBuilder)
-                .apply {
-                    if (useSpotifyPreferences) {
-                        if (spotifyClientID.isEmpty() || spotifyClientSecret.isEmpty()) return Result.failure(
-                            Throwable("Spotify client ID or secret is empty while you have the custom credentials option enabled! \nPlease check your settings.")
-                        )
-                        addOption("--client-id", spotifyClientID)
-                        addOption("--client-secret", spotifyClientSecret)
-                    }
-                }.runCatching {
+                .runCatching {
                     SpotDL.getInstance().execute(this, taskId, callback = progressCallback)
                 }.onFailure { th ->
                     return if (th.message?.contains("No such file or directory") == true) {

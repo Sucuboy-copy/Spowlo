@@ -30,7 +30,6 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryMusic
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.ContentPaste
@@ -81,10 +80,12 @@ import com.bobbyesp.spowlo.App
 import com.bobbyesp.spowlo.Downloader
 import com.bobbyesp.spowlo.R
 import com.bobbyesp.spowlo.ui.common.LocalWindowWidthState
+import com.bobbyesp.spowlo.ui.pages.settings.about.LocalAsset
 import com.bobbyesp.spowlo.ui.components.ClearButton
 import com.bobbyesp.spowlo.ui.components.ConsoleOutputComponent
 import com.bobbyesp.spowlo.ui.components.NavigationBarSpacer
 import com.bobbyesp.spowlo.ui.components.songs.SongCard
+import com.bobbyesp.spowlo.utils.ChromeCustomTabsUtil
 import com.bobbyesp.spowlo.utils.CONFIGURE
 import com.bobbyesp.spowlo.utils.DEBUG
 import com.bobbyesp.spowlo.utils.PreferencesUtil
@@ -106,7 +107,6 @@ fun DownloaderPage(
     navigateToDownloads: () -> Unit = {},
     navigateToDownloaderSheet: () -> Unit = {},
     onSongCardClicked: () -> Unit = {},
-    navigateToSearch: () -> Unit = {},
     navigateToTasks: () -> Unit = {},
     sheetState: SheetState,
     downloaderViewModel: DownloaderViewModel = viewModel(),
@@ -198,7 +198,6 @@ fun DownloaderPage(
             keyboardController?.hide()
         },
         navigateToTasks = navigateToTasks,
-        navigateToSearch = navigateToSearch,
         navigateToDownloads = navigateToDownloads,
         onSongCardClicked = { onSongCardClicked() },
         showOutput = showConsoleOutput,
@@ -249,7 +248,6 @@ fun DownloaderPageImplementation(
     navigateToSettings: () -> Unit = {},
     navigateToDownloads: () -> Unit = {},
     navigateToTasks: () -> Unit = {},
-    navigateToSearch: () -> Unit = {},
     pasteCallback: () -> Unit = {},
     cancelCallback: () -> Unit = {},
     onSongCardClicked: () -> Unit = {},
@@ -268,10 +266,10 @@ fun DownloaderPageImplementation(
                     )
                 }
             }, actions = {
-                IconButton(onClick = { navigateToSearch() }) {
+                IconButton(onClick = { ChromeCustomTabsUtil.openUrl("https://music.youtube.com") }) {
                     Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = stringResource(id = R.string.searcher)
+                        imageVector = LocalAsset(id = R.drawable.youtube_music_icons8),
+                        contentDescription = stringResource(id = R.string.open_in_ytmusic)
                     )
                 }
                 IconButton(onClick = { navigateToTasks() }) {

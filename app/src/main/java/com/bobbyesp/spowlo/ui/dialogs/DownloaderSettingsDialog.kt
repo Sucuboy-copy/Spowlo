@@ -44,8 +44,6 @@ import com.bobbyesp.spowlo.ui.components.FilledButtonWithIcon
 import com.bobbyesp.spowlo.ui.components.OutlinedButtonWithIcon
 import com.bobbyesp.spowlo.ui.pages.settings.downloader.AudioFormatDialog
 import com.bobbyesp.spowlo.ui.pages.settings.downloader.AudioQualityDialog
-import com.bobbyesp.spowlo.ui.pages.settings.spotify.SpotifyClientIDDialog
-import com.bobbyesp.spowlo.ui.pages.settings.spotify.SpotifyClientSecretDialog
 import com.bobbyesp.spowlo.utils.COOKIES
 import com.bobbyesp.spowlo.utils.DONT_FILTER_RESULTS
 import com.bobbyesp.spowlo.utils.DOWNLOAD_LYRICS
@@ -53,7 +51,6 @@ import com.bobbyesp.spowlo.utils.ORIGINAL_AUDIO
 import com.bobbyesp.spowlo.utils.PreferencesUtil
 import com.bobbyesp.spowlo.utils.SKIP_INFO_FETCH
 import com.bobbyesp.spowlo.utils.USE_CACHING
-import com.bobbyesp.spowlo.utils.USE_SPOTIFY_CREDENTIALS
 import com.bobbyesp.spowlo.utils.USE_YT_METADATA
 
 @OptIn(
@@ -76,14 +73,6 @@ fun DownloaderSettingsDialog(
         mutableStateOf(
             settings.getValue(
                 ORIGINAL_AUDIO
-            )
-        )
-    }
-
-    var useSpotifyCredentials by remember {
-        mutableStateOf(
-            settings.getValue(
-                USE_SPOTIFY_CREDENTIALS
             )
         )
     }
@@ -130,8 +119,6 @@ fun DownloaderSettingsDialog(
 
     var showAudioFormatDialog by remember { mutableStateOf(false) }
     var showAudioQualityDialog by remember { mutableStateOf(false) }
-    var showClientIdDialog by remember { mutableStateOf(false) }
-    var showClientSecretDialog by remember { mutableStateOf(false) }
 
     val scrollState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -439,15 +426,4 @@ fun DownloaderSettingsDialog(
             onDismissRequest = { showAudioQualityDialog = false },
         )
     }
-    if (showClientIdDialog) {
-        SpotifyClientIDDialog {
-            showClientIdDialog = !showClientIdDialog
-        }
-    }
-    if (showClientSecretDialog) {
-        SpotifyClientSecretDialog {
-            showClientSecretDialog = !showClientSecretDialog
-        }
-    }
-
 }
